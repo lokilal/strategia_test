@@ -1,5 +1,7 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
+
 from rest_framework import status
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
@@ -9,21 +11,21 @@ class PostViewSet(ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
 
-    def post(self, request):
-        serializer = PostSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(
-                status=status.HTTP_201_CREATED
-            )
-        return Response(
-            status=status.HTTP_400_BAD_REQUEST
-        )
+    def perform_create(self, serializer):
+        serializer.save()
 
 
 class CommentViewSet(ModelViewSet):
-    queryset = Comment.objects.all()
     serializer_class = CommentSerializer
 
-    def post(self, request):
-        pass
+    def perform_create(self, serializer):
+        post = get_object_or_404(Post, pk=self.kwargs['post_id'])
+        serializer.save(
+            post=post
+        )
+
+    def get_queryset(self):
+        post_id = self.kwargs['post_id']
+        post = get_object_or_404(Post, pk=post_id)
+        queryset = Comment.objects.filter(post=post)
+        return queryset

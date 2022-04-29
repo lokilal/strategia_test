@@ -11,7 +11,9 @@ class CommentSerializer(serializers.ModelSerializer):
         'get_children'
     )
     post = serializers.PrimaryKeyRelatedField(read_only=True)
-    parent = serializers.PrimaryKeyRelatedField(queryset=Comment.objects.all(), required=False)
+    parent = serializers.PrimaryKeyRelatedField(
+        queryset=Comment.objects.all(), required=False
+    )
 
     def get_children(self, comment):
         children = comment.get_children()
@@ -19,7 +21,7 @@ class CommentSerializer(serializers.ModelSerializer):
             return []
         return CommentSerializer(
             children, many=True
-        )
+        ).data
 
     class Meta:
         model = Comment
@@ -46,3 +48,4 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = '__all__'
+        read_only_fields = ('comments', 'pub_date' )
