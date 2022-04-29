@@ -1,9 +1,6 @@
 import mptt.fields
 from django.db import models
-from django.contrib.auth import get_user_model
 from mptt.models import MPTTModel
-
-User = get_user_model()
 
 
 class Post(models.Model):
@@ -11,8 +8,8 @@ class Post(models.Model):
     pub_date = models.DateTimeField(
         auto_now_add=True
     )
-    author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='posts'
+    author = models.CharField(
+        max_length=256
     )
 
 
@@ -25,7 +22,7 @@ class Comment(MPTTModel):
         'self', on_delete=models.CASCADE, related_name='children',
         null=True, blank=True
     )
-    author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='comments'
+    author = models.CharField(
+        max_length=256
     )
 

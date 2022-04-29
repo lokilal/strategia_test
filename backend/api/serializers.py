@@ -7,12 +7,10 @@ MAX_DEPTH = 5
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    author = serializers.SlugRelatedField(
-        slug_field='username', read_only=True
-    )
     children = serializers.SerializerMethodField(
         'get_children'
     )
+    post = serializers.PrimaryKeyRelatedField(read_only=True)
     parent = serializers.PrimaryKeyRelatedField(queryset=Comment.objects.all(), required=False)
 
     def get_children(self, comment):
@@ -30,9 +28,6 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class PostSerializer(serializers.ModelSerializer):
-    author = serializers.SlugRelatedField(
-        slug_field='username', read_only=True
-    )
     comments = serializers.SerializerMethodField(
         'get_comments'
     )
